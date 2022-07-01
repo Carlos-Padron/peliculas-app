@@ -7,17 +7,23 @@ class HomScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Pelíuclas en cine"),
-          elevation: 0,
-          actions: [
-            IconButton(onPressed: null, icon: Icon(Icons.search_outlined))
+      appBar: AppBar(
+        title: const Text("Pelíuclas en cine"),
+        elevation: 0,
+        actions: const [
+          IconButton(onPressed: null, icon: Icon(Icons.search_outlined))
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: const [
+            //Tajetas principales
+            CardSwiper(),
+            //Slider Peliculas
+            MovieSlider()
           ],
         ),
-        body: Column(
-          children: [
-            CardSwiper(),
-          ],
-        ));
+      ),
+    );
   }
 }

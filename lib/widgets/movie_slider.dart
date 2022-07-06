@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../models/movie.dart';
+
 class MovieSlider extends StatelessWidget {
-  const MovieSlider({Key? key}) : super(key: key);
+  final List<Movie> movies;
+
+  MovieSlider({Key? key, required this.movies}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +28,11 @@ class MovieSlider extends StatelessWidget {
           Expanded(
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 20,
-                itemBuilder: (_, int index) => _MoviePoster()),
+                itemCount: movies.length,
+                itemBuilder: (_, int index) {
+                  Movie popularMovie = movies[index];
+                  return _MoviePoster(popularMovie: popularMovie);
+                }),
           )
         ],
       ),
@@ -34,7 +41,8 @@ class MovieSlider extends StatelessWidget {
 }
 
 class _MoviePoster extends StatelessWidget {
-  const _MoviePoster({Key? key}) : super(key: key);
+  final Movie popularMovie;
+  _MoviePoster({Key? key, required this.popularMovie}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +58,7 @@ class _MoviePoster extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               child: FadeInImage(
                 placeholder: AssetImage("assets/no-image.jpg"),
-                image: NetworkImage("https://via.placeholder.com/300x400"),
+                image: NetworkImage(popularMovie.fullPosterImg),
                 width: 130,
                 height: 190,
                 fit: BoxFit.cover,
@@ -61,7 +69,7 @@ class _MoviePoster extends StatelessWidget {
             height: 5,
           ),
           Text(
-            "Star Wars el retorno del jedi silvestre de monte cristo",
+            popularMovie.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,

@@ -14,25 +14,30 @@ class MoviesProvider extends ChangeNotifier {
   List<Movie> onDisplayMovies = [];
   List<Movie> popularMovies = [];
 
+  int _popularPage = 0;
+
   MoviesProvider() {
     getOnDisplayMovies();
     getPopularMovies();
   }
 
-  getOnDisplayMovies() async {
+  //Make request
+  Future<String> _getJsonData(String endpoint, [int page = 1]) async {
     Uri url = Uri.https(
       _baseUrl,
-      "3/movie/now_playing",
-      {"api_key": _apiKey, "language": _language, "page": "1"},
+      "3/movie/$endpoint",
+      {"api_key": _apiKey, "language": _language, "page": "$page"},
     );
 
     final response = await http.get(url);
 
-    if (response.statusCode != 200) {
-      return print("error");
-    }
+    return response.body;
+  }
 
-    final nowPlayingResponse = NowPlayingResponse.fromJson(response.body);
+  getOnDisplayMovies() async {
+    final jsonData = await _getJsonData("now_playing");
+
+    final nowPlayingResponse = NowPlayingResponse.fromJson(jsonData);
 
     onDisplayMovies = nowPlayingResponse.results;
 
@@ -40,19 +45,12 @@ class MoviesProvider extends ChangeNotifier {
   }
 
   getPopularMovies() async {
-    Uri url = Uri.https(
-      _baseUrl,
-      "3/movie/popular",
-      {"api_key": _apiKey, "language": _language, "page": "1"},
-    );
+    _popularPage++;
 
-    final response = await http.get(url);
+    print("solitud");
+    final jsonData = await _getJsonData("popular", _popularPage);
 
-    if (response.statusCode != 200) {
-      return print("error");
-    }
-
-    final json = jsonDecode(response.body);
+    final json = jsonDecode(jsonData);
 
     final popularMoviesResponse = PopularResponse.fromJson(json);
 

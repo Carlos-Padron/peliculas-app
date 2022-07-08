@@ -24,7 +24,11 @@ class HomScreen extends StatelessWidget {
             //Tajetas principales
             CardSwiper(movies: moviesProviders.onDisplayMovies),
             //Slider Peliculas
-            MovieSlider(movies: moviesProviders.popularMovies)
+            MovieSlider(
+              movies: moviesProviders.popularMovies,
+              title: "Populares!",
+              onNextPage: moviesProviders.getPopularMovies,
+            )
           ],
         ),
       ),

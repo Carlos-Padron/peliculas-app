@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:peliculas_app/models/credits_response.dart';
 import 'package:peliculas_app/models/now_playing_response.dart';
 import 'package:peliculas_app/models/popular_respose.dart';
 
@@ -13,6 +14,8 @@ class MoviesProvider extends ChangeNotifier {
 
   List<Movie> onDisplayMovies = [];
   List<Movie> popularMovies = [];
+
+  Map<int, List<Cast>> moviesCast = {};
 
   int _popularPage = 0;
 
@@ -47,7 +50,6 @@ class MoviesProvider extends ChangeNotifier {
   getPopularMovies() async {
     _popularPage++;
 
-    print("solitud");
     final jsonData = await _getJsonData("popular", _popularPage);
 
     final json = jsonDecode(jsonData);
@@ -57,5 +59,22 @@ class MoviesProvider extends ChangeNotifier {
     popularMovies = popularMoviesResponse.results ?? [];
 
     notifyListeners();
+  }
+
+  Future<List<Cast>> getMovieCast(int movieId) async {
+    if (moviesCast.containsKey(movieId)) {
+      return moviesCast[movieId]!;
+    }
+
+    final jsonData = await _getJsonData("$movieId/credits");
+
+    final json = jsonDecode(jsonData);
+
+    final creditsResponse = CreditsResponse.fromJson(json);
+
+    moviesCast[movieId] = creditsResponse.cast!;
+
+    return creditsResponse.cast!;
+    //check map
   }
 }

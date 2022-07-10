@@ -85,15 +85,18 @@ class _PosterAndTitle extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: FadeInImage(
-              placeholder: const AssetImage("assets/no-image.jpg"),
-              image: NetworkImage(
-                movie.fullPosterImg,
+          Hero(
+            tag: movie.heroId ?? "",
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: FadeInImage(
+                placeholder: const AssetImage("assets/no-image.jpg"),
+                image: NetworkImage(
+                  movie.fullPosterImg,
+                ),
+                height: 150,
+                fit: BoxFit.cover,
               ),
-              height: 150,
-              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(width: 20),

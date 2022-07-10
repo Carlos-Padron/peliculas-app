@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:peliculas_app/models/credits_response.dart';
 import 'package:peliculas_app/models/now_playing_response.dart';
 import 'package:peliculas_app/models/popular_respose.dart';
+import 'package:peliculas_app/models/search_response.dart';
 
 import '../models/movie.dart';
 
@@ -14,6 +15,7 @@ class MoviesProvider extends ChangeNotifier {
 
   List<Movie> onDisplayMovies = [];
   List<Movie> popularMovies = [];
+  bool fetchingNewPopularMovies = false;
 
   Map<int, List<Cast>> moviesCast = {};
 
@@ -48,17 +50,24 @@ class MoviesProvider extends ChangeNotifier {
   }
 
   getPopularMovies() async {
-    _popularPage++;
+    if (!fetchingNewPopularMovies) {
+      fetchingNewPopularMovies = true;
+      _popularPage++;
 
-    final jsonData = await _getJsonData("popular", _popularPage);
+      final jsonData = await _getJsonData("popular", _popularPage);
 
-    final json = jsonDecode(jsonData);
+      final json = jsonDecode(jsonData);
 
-    final popularMoviesResponse = PopularResponse.fromJson(json);
+      final popularMoviesResponse = PopularResponse.fromJson(json);
 
-    popularMovies = popularMoviesResponse.results ?? [];
+      popularMovies = [
+        ...popularMovies,
+        ...popularMoviesResponse.results ?? []
+      ];
 
-    notifyListeners();
+      notifyListeners();
+      fetchingNewPopularMovies = false;
+    }
   }
 
   Future<List<Cast>> getMovieCast(int movieId) async {
@@ -76,5 +85,20 @@ class MoviesProvider extends ChangeNotifier {
 
     return creditsResponse.cast!;
     //check map
+  }
+
+  Future<List<Movie>> searchMovie(String query) async {
+    final Uri url = Uri.https(
+      _baseUrl,
+      "3/search/movie",
+      {"api_key": _apiKey, "language": _language, "query": query},
+    );
+
+    final response = await http.get(url);
+
+    final json = jsonDecode(response.body);
+    final searchReponse = SearchResponse.fromJson(json);
+
+    return searchReponse.results ?? [];
   }
 }
